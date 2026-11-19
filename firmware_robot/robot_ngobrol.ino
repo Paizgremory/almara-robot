@@ -1,3 +1,4 @@
+#include "types.h"
 // Almara (robot ngobrol) — ESP32-S3 N16R8. Kontrol lewat remote ESP32-C3 via BLE sendiri (ble_pad.h),
 // BUKAN Bluepad32/gamepad X3, jadi pakai board package ESP32 Arduino biasa (bukan paket Bluepad32).
 //
