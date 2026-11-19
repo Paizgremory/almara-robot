@@ -1,0 +1,82 @@
+name: Build Almara firmware (merge.bin)
+
+# Jalan otomatis tiap kali file di firmware_robot/ berubah & di-push ke GitHub,
+# atau bisa dipicu manual lewat tab "Actions" -> pilih workflow ini -> "Run workflow".
+on:
+  push:
+    paths:
+      - "firmware_robot/**"
+      - ".github/workflows/build-firmware.yml"
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ambil kode dari repo
+        uses: actions/checkout@v4
+
+      # ---- UBAH BAGIAN INI kalau board/opsi Arduino IDE kamu berbeda ----
+      # Cara cek: buka Arduino IDE -> Tools, lihat board & tiap opsinya (PSRAM, Flash Size,
+      # Partition Scheme, dst.), lalu samakan nilainya di baris FQBN di bawah.
+      - name: Set target board (ESP32-S3 N16R8)
+        run: |
+          echo "FQBN=esp32:esp32:esp32s3:CDCOnBoot=cdc,PSRAM=opi,FlashMode=qio,FlashFreq=80,FlashSize=16M,PartitionScheme=default_16MB,DebugLevel=none" >> "$GITHUB_ENV"
+
+      - name: Install Arduino CLI
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Install board package ESP32 (espressif)
+        run: |
+          arduino-cli config init --overwrite
+          arduino-cli config add board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      - name: Install library yang dibutuhkan
+        run: |
+          arduino-cli lib install "NimBLE-Arduino"
+          arduino-cli lib install "WiFiManager"
+          arduino-cli lib install "DHT sensor library"
+          arduino-cli lib install "Adafruit Unified Sensor"
+          # Kalau proses compile di bawah bilang "xxx.h: No such file or directory" untuk
+          # library lain (mis. driver TFT ST7735, dsb.), tambah baris serupa di sini dengan
+          # nama persis seperti yang dicari lewat "arduino-cli lib search <nama>".
+
+      # Arduino mewajibkan nama folder sketch SAMA PERSIS dengan nama file .ino utamanya.
+      # Folder di repo ini bernama "firmware_robot" tapi file utamanya "robot_ngobrol.ino",
+      # jadi disalin dulu ke folder bernama "robot_ngobrol" sebelum di-compile.
+      - name: Siapkan folder sketch
+        run: |
+          mkdir -p build_sketch/robot_ngobrol
+          cp firmware_robot/*.ino firmware_robot/*.h build_sketch/robot_ngobrol/
+
+      - name: Compile
+        run: |
+          arduino-cli compile --fqbn "$FQBN" build_sketch/robot_ngobrol \
+            --export-binaries --output-dir build_out
+
+      - name: Gabungkan jadi satu merge.bin (siap di-flash lewat ESP Web Tools)
+        run: |
+          pip install esptool
+          BIN_DIR="build_out"
+          # boot_app0.bin bukan hasil compile, tapi bagian dari board package esp32 yang tadi di-install.
+          BOOT_APP0=$(find "$HOME/.arduino15/packages/esp32" -name "boot_app0.bin" | head -n1)
+          echo "boot_app0.bin ketemu di: $BOOT_APP0"
+          python3 -m esptool --chip esp32s3 merge-bin \
+            -o "$BIN_DIR/merge.bin" \
+            --flash-mode qio --flash-freq 80m --flash-size 16MB \
+            0x0    "$BIN_DIR"/robot_ngobrol.ino.bootloader.bin \
+            0x8000 "$BIN_DIR"/robot_ngobrol.ino.partitions.bin \
+            0xe000 "$BOOT_APP0" \
+            0x10000 "$BIN_DIR"/robot_ngobrol.ino.bin
+
+      - name: Upload hasil (merge.bin + file per-bagian)
+        uses: actions/upload-artifact@v4
+        with:
+          name: almara-firmware
+          path: |
+            build_out/merge.bin
+            build_out/robot_ngobrol.ino.bin
+            build_out/robot_ngobrol.ino.bootloader.bin
+            build_out/robot_ngobrol.ino.partitions.bin
