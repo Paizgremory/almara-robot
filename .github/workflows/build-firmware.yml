@@ -39,6 +39,8 @@ jobs:
           arduino-cli lib install "WiFiManager"
           arduino-cli lib install "DHT sensor library"
           arduino-cli lib install "Adafruit Unified Sensor"
+arduino-cli lib install "Adafruit GFX Library"
+arduino-cli lib install "Adafruit ST7735 and ST7789 Library"
           # Kalau proses compile di bawah bilang "xxx.h: No such file or directory" untuk
           # library lain (mis. driver TFT ST7735, dsb.), tambah baris serupa di sini dengan
           # nama persis seperti yang dicari lewat "arduino-cli lib search <nama>".
