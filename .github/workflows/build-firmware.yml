@@ -35,7 +35,7 @@ jobs:
 
       - name: Install library yang dibutuhkan
         run: |
-          arduino-cli lib install "NimBLE-Arduino"
+          arduino-cli lib install "NimBLE-Arduino@1.4.2"
           arduino-cli lib install "WiFiManager"
           arduino-cli lib install "DHT sensor library"
           arduino-cli lib install "Adafruit Unified Sensor"
