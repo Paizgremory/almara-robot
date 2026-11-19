@@ -21,7 +21,7 @@ jobs:
       # Partition Scheme, dst.), lalu samakan nilainya di baris FQBN di bawah.
       - name: Set target board (ESP32-S3 N16R8)
         run: |
-          echo "FQBN=esp32:esp32:esp32s3:CDCOnBoot=cdc,PSRAM=opi,FlashMode=qio,FlashFreq=80,FlashSize=16M,PartitionScheme=default_16MB,DebugLevel=none" >> "$GITHUB_ENV"
+          echo "FQBN=esp32:esp32:esp32s3:CDCOnBoot=cdc,PSRAM=opi,FlashMode=qio,FlashSize=16M,PartitionScheme=default_16MB,DebugLevel=none" >> "$GITHUB_ENV"
 
       - name: Install Arduino CLI
         uses: arduino/setup-arduino-cli@v2
