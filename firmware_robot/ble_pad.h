@@ -60,7 +60,7 @@ class BlePadSrvCb : public NimBLEServerCallbacks {
   void onConnect(NimBLEServer *, NimBLEConnInfo &) override { blePadConnected = true; react(BH_WOW); }
   void onDisconnect(NimBLEServer *s, NimBLEConnInfo &, int) override {
     blePadConnected = false;
-    s->getAdvertising()->start();  // siap disambung remote lagi
+    // advertising otomatis nyala lagi (advertiseOnDisconnect)
   }
 };
 static BlePadChrCb blePadChrCb;
@@ -75,10 +75,23 @@ static void blePadBegin() {
       BLEPAD_CHR_UUID, NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_NR);
   chr->setCallbacks(&blePadChrCb);
   svc->start();
+  srv->advertiseOnDisconnect(true);
+#if CONFIG_BT_NIMBLE_EXT_ADV
+  NimBLEExtAdvertising *adv = NimBLEDevice::getAdvertising();
+  NimBLEExtAdvertisement ad(BLE_HCI_LE_PHY_1M, BLE_HCI_LE_PHY_1M);
+  ad.setLegacyAdvertising(true);
+  ad.setConnectable(true);
+  ad.setScannable(true);
+  ad.setName(BLEPAD_DEV_NAME);
+  ad.addServiceUUID(BLEPAD_SVC_UUID);
+  adv->setInstanceData(0, ad);
+  adv->start(0);
+#else
   NimBLEAdvertising *adv = NimBLEDevice::getAdvertising();
   adv->addServiceUUID(BLEPAD_SVC_UUID);
   adv->setName(BLEPAD_DEV_NAME);
   adv->start();
+#endif
   Serial.println("[BLE] siap, menunggu remote...");
 }
 

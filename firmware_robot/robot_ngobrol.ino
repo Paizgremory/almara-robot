@@ -54,21 +54,23 @@
 #include <esp_system.h>
 bool safeMode = false;  // mode aman: gamepad Bluetooth tidak dinyalakan (setelah 2x restart berturut)
 #include "kompat.h"   // ESP_I2S (Arduino 3.x) atau pembungkus I2S lama
-// WiFi tanpa hemat daya = lebih cepat. TAPI karena BLE (remote via ble_pad.h) aktif bareng WiFi,
-// ESP32 WAJIB modem sleep supaya radio Bluetooth & WiFi tidak rebutan; mematikannya bisa membuat
-// sistem abort (crash/restart).
-inline void wifiFast() {
-  WiFi.setSleep(WIFI_PS_MIN_MODEM);
-}
 #include "layar_tft.h"   // layar TFT 1,8" 128x160 (ST7735) + slot microSD built-in
 #include "gerak.h"     // taruh setelah #include "layar_tft.h"
 // di setup():  gerakBegin();
 // di loop():   gerakUpdate();   // tidak pakai delay, aman dipanggil tiap putaran
 #include "wajah.h"
 #include "games.h"
+#include "tipe.h"      // tipe Pad/Timer/Trans/Phrase + react()
 #include "ble_pad.h"
 #include "tampilan.h"
 #include "oled_info.h"   // kanvas info 128x32 (bagian bawah layar TFT)
+
+// WiFi tanpa hemat daya = lebih cepat. TAPI karena BLE (remote via ble_pad.h) aktif bareng WiFi,
+// ESP32 WAJIB modem sleep supaya radio Bluetooth & WiFi tidak rebutan; mematikannya bisa membuat
+// sistem abort (crash/restart).
+inline void wifiFast() {
+  WiFi.setSleep(WIFI_PS_MIN_MODEM);
+}
 
 #define MIC_SCK 5
 #define MIC_WS  4
@@ -210,8 +212,6 @@ String pendingReminder;          // pengingat berulang dari server yang menunggu
 uint8_t btMode = 0;              // speaker Bluetooth: 0 mati, 1 hanya Bluetooth, 2 robot + Bluetooth
 volatile uint32_t btSeen = 0;    // kapan jembatan terakhir melapor
 volatile bool btConn = false;    // speaker Bluetooth tersambung ke jembatan?
-volatile uint8_t reactReq = 0;   // tingkah wajah yang diminta (dari task mana pun), dijalankan loop utama
-inline void react(Behav b) { reactReq = (uint8_t)b; }
 volatile int8_t zapReq = 0;      // -1 = tombol kiri (sebelumnya), +1 = tombol kanan (berikutnya)
 String pendingCmd;               // perintah untuk server yang menunggu dikirim (diproses loop, tanpa rekursi)
 volatile uint8_t quickReq = 0;   // 1 = ganti mode terang/gelap, 2 = ganti efek (dari tombol, diproses loop)
@@ -246,11 +246,6 @@ float musicSec = 0;          // detik musik yang sudah terdengar saat dihentikan
 String fwMd5;                // sidik firmware yang sedang berjalan (untuk cek pembaruan)
 bool fwAvailable = false;
 
-struct Timer {
-  bool on;
-  uint32_t due;
-  char label[48];
-};
 Timer timers[MAX_TIMERS];
 
 // ---------------- Tampilan ----------------
@@ -423,7 +418,6 @@ void showError(const String &msg) {
 }
 
 // ---- Transisi antar layar: digabung langsung di buffer layar ----
-enum Trans : uint8_t { TR_NONE, TR_LEFT, TR_RIGHT, TR_UP, TR_DOWN, TR_IRIS };
 static uint8_t frameLast[1024], frameFrom[1024], frameNext[1024];
 
 inline bool bufPix(const uint8_t *b, int x, int y) { return (b[(y >> 3) * 128 + x] >> (y & 7)) & 1; }
@@ -467,30 +461,9 @@ void setContrast(uint8_t v) {   // kecerahan = lampu latar TFT (BLK)
 }
 
 // ---------------- Gamepad X3 (BLE, langsung ke S3) ----------------
-#define PB_A 0x01
-#define PB_B 0x02
-#define PB_X 0x04
-#define PB_Y 0x08
-#define PB_LB 0x10
-#define PB_RB 0x20
-#define PD_UP 0x01
-#define PD_DOWN 0x02
-#define PD_RIGHT 0x04
-#define PD_LEFT 0x08
-#define PM_START 0x04
 
 bool btActive();
 
-struct Pad {
-  bool conn = false;
-  int16_t lx = 0, ly = 0, rx = 0, ry = 0;
-  uint16_t btn = 0;
-  uint8_t dpad = 0, misc = 0;
-  int16_t l2 = 0, r2 = 0;  // pemicu analog 0..1023
-  uint32_t at = 0;
-};
-Pad padNow;
-portMUX_TYPE padMux = portMUX_INITIALIZER_UNLOCKED;
 Pad padGet() {
   Pad p;
   taskENTER_CRITICAL(&padMux);
@@ -1837,7 +1810,6 @@ bool streamPlay(HTTPClient &http, size_t *played = nullptr, bool music = false) 
   return stopped;
 }
 
-#include "phrase.h"
 #include "sdmusik.h"   // musik dari kartu microSD (MP3), tanpa internet
 
 // Ambil angka / teks dari JSON sederhana tanpa library, mis. {"ok":true,"vol":5,"tampilan":"TEKS"}
@@ -1978,10 +1950,6 @@ bool speakOnline(const String &teks, bool *stopped = nullptr) {
 }
 
 // ---------------- Suara cadangan (tersimpan di flash, dipakai saat server mati) ----------------
-struct Phrase {
-  const char *key;
-  const char *text;
-};
 const Phrase PHRASES[] = {
   {"offline", "Maaf, aku sedang tidak tersambung ke server. Coba lagi sebentar ya."},
   {"wifi", "Sambungan WiFi aku terputus. Tunggu sebentar ya."},
