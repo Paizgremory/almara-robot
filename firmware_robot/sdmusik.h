@@ -1,6 +1,6 @@
 // Musik dari kartu microSD (tanpa internet) untuk Almara.
 // Modul SD built-in di modul TFT 1,8" (berbagi bus FSPI dengan layar):
-// SD_CS=GPIO9, SD_SCK=GPIO45, SD_MOSI=GPIO41, SD_MISO=GPIO3
+// SD_CS=GPIO9, SD_SCK=GPIO45, SD_MOSI=GPIO13, SD_MISO=GPIO3
 // Kartu FAT32, lagu MP3 di folder /musik (kalau folder tidak ada, dipakai folder paling atas).
 //
 // Kendali sensor sentuh saat lagu diputar:
@@ -23,7 +23,7 @@
 
 #define SD_CS   9
 #define SD_SCK  45  // sama dengan TFT_SCK
-#define SD_MOSI 41  // sama dengan TFT_MOSI (berubah dari 48)
+#define SD_MOSI 13  // sama dengan TFT_MOSI
 #define SD_MISO 3   // MISO hanya dipakai SD (layar tidak butuh)
 #define SD_DIR  "/musik"
 #define SD_MAX_LAGU 400

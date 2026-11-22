@@ -8,7 +8,7 @@
 | CS        | GPIO 47      |
 | RESET     | GPIO 38      |
 | A0 / DC   | GPIO 42      |
-| SDA/MOSI  | GPIO 41      |
+| SDA/MOSI  | GPIO 13      |
 | SCK       | GPIO 45      |
 | LED       | GPIO 11      |
 
@@ -16,7 +16,7 @@
 | Pin Modul | GPIO ESP32-S3 |
 |-----------|--------------|
 | SD_CS     | GPIO 9       |
-| SD_MOSI   | GPIO 41 (sama dengan SDA layar) |
+| SD_MOSI   | GPIO 13 (sama dengan SDA layar) |
 | SD_MISO   | GPIO 3       |
 | SD_SCK    | GPIO 45 (sama dengan SCK layar) |
 

@@ -7,11 +7,11 @@
 //   INMP441  : SCK=5, WS=4, SD=6, VDD=3.3V, GND=GND, L/R=GND
 //   MAX98357A: BCLK=15, LRC=16, DIN=7, VIN=3,3V (regulator 3,3V >= 1A, BUKAN dari pin 3V3 ESP32; kapasitor 470uF + 100nF dekat VIN), GND=GND, SD=GPIO 2, GAIN dibiarkan kosong (9 dB)
 //   Layar TFT IPS 1,3" 240x240 ST7789 (satu layar, menggantikan OLED 128x64 dan OLED 128x32): GND=GND, VCC=3.3V,
-//                SCL=42, SDA=41, DC=47, RES=38, BLK=20 (lampu latar, PWM). Modul ini tidak punya pin CS.
+//                SCK=45, MOSI=13, DC=42, CS=47, RES=38, BLK=11 (lampu latar, PWM).
 //   Sensor sentuh TTP223 : OUT=GPIO 10, VCC=3.3V, GND=GND (sentuh = bicara; tombol fisik 11/12/13 = kiri-atas / OK / kanan-bawah, ke GND, lihat bawah)
 //   DHT22    : DATA=8, VCC=3.3V, GND=GND (sensor polos 4 kaki: tambah resistor 10k DATA ke 3.3V)
 //   Tombol fisik (3 buah, tiap tombol: satu kaki ke GPIO, kaki lain ke GND): GPIO 11 = kiri/atas, GPIO 12 = OK/pilih, GPIO 13 = kanan/bawah
-//   Modul SD     : SD built-in di modul layar TFT; CS=9, SCK=45, MOSI=41, MISO=3 (berbagi bus FSPI dengan layar)
+//   Modul SD     : SD built-in di modul layar TFT; CS=9, SCK=45, MOSI=13, MISO=3 (berbagi bus FSPI dengan layar)
 //   Baterai  : pembagi 120k (atas) / 120k (bawah) dari + baterai 1 sel ke GPIO 1, 0,1 uF ke GND
 //
 // Cara pakai:
@@ -3284,7 +3284,7 @@ void setup() {
   sdInit();  // kartu microSD (opsional): musik tanpa internet
 
   oled.begin();
-  tftBegin();   // layar TFT ST7789 (SPI): SCL=42, SDA=41, DC=47, RES=38, BLK=20
+  tftBegin();   // layar TFT (SPI): SCK=45, MOSI=13, DC=42, CS=47, RES=38, BLK=11
   bootDiagnose();
   dispMtx = xSemaphoreCreateMutex();
   prefs.begin("robot", true);

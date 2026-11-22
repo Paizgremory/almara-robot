@@ -19,11 +19,11 @@
 //   CS    -> GPIO 47   (chip select layar)
 //   RESET -> GPIO 38
 //   A0/DC -> GPIO 42   (data/command)
-//   SDA   -> GPIO 41   (MOSI)
+//   SDA   -> GPIO 13   (MOSI)
 //   SCK   -> GPIO 45
 //   LED   -> GPIO 11   (lampu latar, PWM)
 //   SD_CS   -> GPIO 9  (chip select kartu SD)
-//   SD_MOSI -> GPIO 41 (sama dengan SDA layar)
+//   SD_MOSI -> GPIO 13 (sama dengan SDA layar)
 //   SD_MISO -> GPIO 3
 //   SD_SCK  -> GPIO 45 (sama dengan SCK layar)
 //
@@ -47,7 +47,7 @@
 
 // ---- pin ----
 #define TFT_SCK  45
-#define TFT_MOSI 41
+#define TFT_MOSI 13
 #define TFT_CS   47
 #define TFT_DC   42
 #define TFT_RST  38
