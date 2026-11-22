@@ -17,11 +17,10 @@
 //   Tangan kanan     -> GPIO 18   (bekas BT_RX, sudah tidak dipakai jembatan BT)
 //   Paha kiri        -> GPIO 14   (putar kaki kiri ke kiri/kanan)
 //   Paha kanan       -> GPIO 21   (putar kaki kanan ke kiri/kanan)
-//   Engkel kiri       -> GPIO 19   (ayun kaki kiri naik/turun, seperti tangan)
+//   Engkel kiri       -> GPIO 12   (ayun kaki kiri naik/turun, seperti tangan)
 //   Engkel kanan      -> GPIO 40   (ayun kaki kanan naik/turun, seperti tangan)
 //
-// Catatan pin: GPIO 19 dipakai D- USB bawaan ESP32-S3 — aman dipakai asal upload/power lewat UART,
-// bukan lewat port USB native (proyek ini sudah lakukan hal sama di layar_tft.h untuk GPIO 20).
+// Catatan pin: GPIO 19/20 (USB bawaan) tidak dikeluarkan di board ESP32-S3 SuperMini, jadi tidak dipakai.
 // Kanal LEDC: 0..5 (kanal 6 sudah dipakai lampu latar TFT di layar_tft.h, jadi tidak disentuh di sini).
 //
 // Pakai di robot_ngobrol.ino:
@@ -37,7 +36,7 @@
 // ---- pin & kalibrasi ----------------------------------------------------------------------
 #define GRK_N 6
 // urutan: 0=tangan kiri, 1=tangan kanan, 2=paha kiri, 3=paha kanan, 4=engkel kiri, 5=engkel kanan
-static const uint8_t grkPin[GRK_N]     = {17, 18, 14, 21, 19, 40};
+static const uint8_t grkPin[GRK_N]     = {17, 18, 14, 21, 12, 40};
 static const uint8_t grkCh[GRK_N]      = {0,  1,  2,  3,  4,  5};
 // "Derajat logis" per servo, posisi DIAM (netral):
 //   Tangan  : 0   = menggantung lurus ke bawah.

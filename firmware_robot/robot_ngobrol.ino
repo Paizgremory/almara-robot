@@ -86,7 +86,7 @@ inline void wifiFast() {
 #define GBTN_L  11
 #define GBTN_OK 12
 #define GBTN_R  13
-inline int gbRead(uint8_t p) { return digitalRead(p); }
+inline int gbRead(uint8_t) { return HIGH; }  // tombol fisik sudah dihapus: pin 11/12 dipakai ulang (lampu TFT, servo), selalu "tidak ditekan"
 #define BAT_PIN  1    // ADC baterai (opsional)
 #define DHT_PIN  8    // sensor suhu & kelembapan DHT22
 #define SAMPLE_RATE 16000
@@ -3277,7 +3277,7 @@ void setup() {
   Serial.begin(115200);
   pinMode(SPK_SD, OUTPUT); digitalWrite(SPK_SD, LOW);  // speaker mati sampai ada suara
   pinMode(BTN_PIN, INPUT_PULLUP);
-  pinMode(GBTN_L, INPUT_PULLUP); pinMode(GBTN_OK, INPUT_PULLUP); pinMode(GBTN_R, INPUT_PULLUP);  // tombol fisik 11/12/13
+  // tombol fisik 11/12/13 sudah dihapus (diganti remote BLE); jangan di-pinMode karena pin 11/12 dipakai ulang
   pinMode(TALK_PIN, TALK_ACTIVE_HIGH ? INPUT_PULLDOWN : INPUT_PULLUP);
   analogSetPinAttenuation(BAT_PIN, ADC_11db);
   dht.begin();

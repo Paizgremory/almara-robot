@@ -21,7 +21,7 @@
 //   A0/DC -> GPIO 42   (data/command)
 //   SDA   -> GPIO 41   (MOSI)
 //   SCK   -> GPIO 45
-//   LED   -> GPIO 20   (lampu latar, PWM)
+//   LED   -> GPIO 11   (lampu latar, PWM)
 //   SD_CS   -> GPIO 9  (chip select kartu SD)
 //   SD_MOSI -> GPIO 41 (sama dengan SDA layar)
 //   SD_MISO -> GPIO 3
@@ -51,7 +51,7 @@
 #define TFT_CS   47
 #define TFT_DC   42
 #define TFT_RST  38
-#define TFT_BLK  20
+#define TFT_BLK  11
 #define TFT_BLK_CH 6   // kanal LEDC lampu latar
 
 // ---- kecepatan & mode SPI ----

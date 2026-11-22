@@ -10,7 +10,7 @@
 | A0 / DC   | GPIO 42      |
 | SDA/MOSI  | GPIO 41      |
 | SCK       | GPIO 45      |
-| LED       | GPIO 20      |
+| LED       | GPIO 11      |
 
 ## Slot SD built-in (pin kiri modul, berbagi MOSI+SCK dengan layar)
 | Pin Modul | GPIO ESP32-S3 |
@@ -26,11 +26,11 @@
 | Mic INMP441      | SCK=5, WS=4, SD=6                |
 | Speaker MAX98357A| BCLK=15, LRC=16, DIN=7, SD=GPIO2|
 | Sensor sentuh    | GPIO 10                          |
-| Tombol fisik     | GPIO 11 (atas), 12 (OK), 13 (bawah) |
+| Tombol fisik     | (dihapus — kontrol lewat remote BLE) |
 | DHT22            | GPIO 8                           |
 | Servo tangan     | L=GPIO17, R=GPIO18               |
 | Servo paha       | L=GPIO14, R=GPIO21               |
-| Servo engkel     | L=GPIO19, R=GPIO40               |
+| Servo engkel     | L=GPIO12, R=GPIO40               |
 
 ## Catatan
 - Modul SD terpisah (yang lama) DILEPAS — tidak dibutuhkan lagi.
